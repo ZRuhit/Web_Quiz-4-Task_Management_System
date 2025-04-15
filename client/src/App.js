@@ -14,6 +14,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/" element={<Login />} />
+          <Route path="/create-task" element={<TaskForm />} />
         </Routes>
       </div>
     </Router>
