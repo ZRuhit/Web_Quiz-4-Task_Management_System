@@ -36,6 +36,7 @@ router.post('/', auth, [
     await newTask.save();
     res.status(201).json(newTask);
   } catch (err) {
+    console.error('Error creating task:', err.message);
     console.error(err.message);
     res.status(500).send('Server error');
   }

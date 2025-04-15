@@ -7,6 +7,7 @@ export default function TaskForm({ fetchTasks }) {
     description: '',
     dueDate: '',
     priority: 'Low',
+    category: '', // Added category field
   });
 
   const handleChange = (e) => {
@@ -15,12 +16,13 @@ export default function TaskForm({ fetchTasks }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(formData); 
     try {
       const token = localStorage.getItem('token');
       await axios.post('http://localhost:5000/api/tasks', formData, {
         headers: { 'x-auth-token': token },
       });
-      setFormData({ title: '', description: '', dueDate: '', priority: 'Low' });
+      setFormData({ title: '', description: '', dueDate: '', priority: 'Low', category: '' }); // Reset category
       fetchTasks(); // to refresh task list
     } catch (err) {
       console.error(err.response?.data?.msg || 'Error creating task');
@@ -37,6 +39,7 @@ export default function TaskForm({ fetchTasks }) {
         onChange={handleChange}
         required
       /><br />
+      
       <textarea
         name="description"
         placeholder="Description"
@@ -44,6 +47,7 @@ export default function TaskForm({ fetchTasks }) {
         onChange={handleChange}
         required
       ></textarea><br />
+      
       <input
         type="date"
         name="dueDate"
@@ -51,11 +55,22 @@ export default function TaskForm({ fetchTasks }) {
         onChange={handleChange}
         required
       /><br />
+      
       <select name="priority" value={formData.priority} onChange={handleChange}>
         <option value="Low">Low</option>
         <option value="Medium">Medium</option>
         <option value="High">High</option>
       </select><br />
+      
+      <input
+        type="text"
+        name="category"
+        placeholder="Category"
+        value={formData.category}
+        onChange={handleChange}
+        required
+      /><br />
+      
       <button type="submit">Add Task</button>
     </form>
   );

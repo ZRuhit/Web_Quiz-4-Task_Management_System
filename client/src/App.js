@@ -3,6 +3,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Header from './components/Header';
+import TaskForm from './pages/TaskForm';
 
 function App() {
   return (

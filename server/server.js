@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/auth.js";
+import tasks from './routes/tasks.js';
 
 // Load environment variables
 dotenv.config();
@@ -29,6 +30,8 @@ app.use(
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use('/api/tasks', tasks);
+
 
 // Basic route to check if the server is working
 app.get("/", (req, res) => {
