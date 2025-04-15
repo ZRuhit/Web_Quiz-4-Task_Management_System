@@ -1,7 +1,7 @@
 // server/routes/tasks.js
 import express from 'express';
 import Task from '../models/Task.js';
-import auth from '../middleware/auth.js'; // Ensure this middleware is implemented to authenticate user
+import auth from '../middleware/auth.js';
 import { check, validationResult } from 'express-validator';
 
 const router = express.Router();
@@ -37,7 +37,6 @@ router.post('/', auth, [
     res.status(201).json(newTask);
   } catch (err) {
     console.error('Error creating task:', err.message);
-    console.error(err.message);
     res.status(500).send('Server error');
   }
 });
@@ -68,7 +67,6 @@ router.put('/:id', auth, async (req, res) => {
       return res.status(404).json({ msg: 'Task not found' });
     }
 
-    // Check if the task belongs to the authenticated user
     if (task.user.toString() !== req.user.id) {
       return res.status(401).json({ msg: 'Not authorized' });
     }
@@ -88,21 +86,33 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
+// @route   PUT api/tasks/:id/completed
+// @desc    Toggle task completion status
+// @access  Private
+router.put('/:id/completed', auth, async (req, res) => {
+  const { isCompleted } = req.body;
+  try {
+    const task = await Task.findById(req.params.id);
+    if (!task) return res.status(404).json({ msg: 'Task not found' });
+    if (task.user.toString() !== req.user.id) return res.status(401).json({ msg: 'Unauthorized' });
+
+    task.isCompleted = isCompleted;
+    await task.save();
+    res.json(task);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
 // @route   DELETE api/tasks/:id
 // @desc    Delete a task
 // @access  Private
 router.delete('/:id', auth, async (req, res) => {
   try {
     let task = await Task.findById(req.params.id);
-
-    if (!task) {
-      return res.status(404).json({ msg: 'Task not found' });
-    }
-
-    // Check if the task belongs to the authenticated user
-    if (task.user.toString() !== req.user.id) {
-      return res.status(401).json({ msg: 'Not authorized' });
-    }
+    if (!task) return res.status(404).json({ msg: 'Task not found' });
+    if (task.user.toString() !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
 
     await task.remove();
     res.json({ msg: 'Task removed' });
